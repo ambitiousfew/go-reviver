@@ -6,6 +6,18 @@
   "engines": {
     "vscode": "^1.95.0"
   },
+  "bugs": {
+    "url": "https://github.com/ambitiousfew/go-reviver/issues"
+  },
+  "publisher": "ambitiousfew",
+  "license": "MIT",
+  "author": {
+    "name": "ambitiousfew"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ambitiousfew/go-reviver"
+  },
   "categories": [
     "Other"
   ],
