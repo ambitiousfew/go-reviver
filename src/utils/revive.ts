@@ -18,7 +18,7 @@ export function parsePackageReviveOutput(cwd: string, output: string): Map<strin
 					);
 					// Create the diagnostic
 					const diagnostic = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Warning);
-					diagnostic.source = 'golintwrap';
+					diagnostic.source = 'reviver';
 					const filepath = path.join(cwd, file);
 					// Add the diagnostic to the correct file
 					if (!diagnosticsByFile.has(filepath)) {

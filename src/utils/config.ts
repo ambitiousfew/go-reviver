@@ -11,7 +11,7 @@ export function getExtensionConfig(defaultLinter: string): ExtensionConfig{
 	const linter = goExtConfig.get('lintTool', defaultLinter);
 	const linterFlags = goExtConfig.get('lintFlags', [] as string[]);
 
-  const config = vscode.workspace.getConfiguration('golintwrap');
+  const config = vscode.workspace.getConfiguration('reviver');
   const workspaceRoot = currentWorkingDirectory();
   const projectConfigs = config.get('projects') || undefined;
 
@@ -33,7 +33,7 @@ export function getExtensionConfig(defaultLinter: string): ExtensionConfig{
 }
 
 export function configHasChanged(e: vscode.ConfigurationChangeEvent): boolean {
-	return e.affectsConfiguration('go.lintFlags') || e.affectsConfiguration('go.lintTool') || e.affectsConfiguration('golintwrap');
+	return e.affectsConfiguration('go.lintFlags') || e.affectsConfiguration('go.lintTool') || e.affectsConfiguration('reviver');
 }
 
 export async function processConfig(rawConfig: ExtensionConfig): Promise<GoLintConfig> {

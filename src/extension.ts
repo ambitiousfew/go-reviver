@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	// retrieve the initial extension configuration values
-	const unprocessedConfig = getExtensionConfig('revive');
+	const unprocessedConfig = getExtensionConfig('reviver');
 
 	// console.log("No cached linter command found, processing config flags");
 	processConfig(unprocessedConfig)

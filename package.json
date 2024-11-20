@@ -2,7 +2,7 @@
   "name": "go-reviver",
   "displayName": "Go Reviver",
   "description": "To make the Golang revive linter more configurable vscode settings",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.95.0"
   },
