@@ -14,7 +14,7 @@ export interface ExtensionConfig {
   workspace: string;
 }
 
-export interface GoLintConfig {
+export interface ReviverConfig {
   enabled: boolean;
   lintTool: string;
   lintFlags: string[];

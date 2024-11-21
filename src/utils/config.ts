@@ -3,17 +3,16 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { currentWorkingDirectory, findFirstAccessibleFile } from './fs';
-import { ExtensionConfig, GoLintConfig, ProjectConfig, Projects } from "../types/config";
+import { ExtensionConfig, ReviverConfig, ProjectConfig, Projects } from "../types/config";
 
 
-export function getExtensionConfig(defaultLinter: string): ExtensionConfig{
-	const goExtConfig = vscode.workspace.getConfiguration('go');
-	const linter = goExtConfig.get('lintTool', defaultLinter);
-	const linterFlags = goExtConfig.get('lintFlags', [] as string[]);
-
+export function getExtensionConfig(): ExtensionConfig{
+	// const goExtConfig = vscode.workspace.getConfiguration('go');
+	// const linterFlags = goExtConfig.get('lintFlags', [] as string[]);
   const config = vscode.workspace.getConfiguration('reviver');
+	const linterFlags = config.get<string[]>('lintFlags', []);
   const workspaceRoot = currentWorkingDirectory();
-  const projectConfigs = config.get('projects') || undefined;
+  const projectConfigs = config.get<ProjectConfig|undefined>('projects');
 
   let projects: Projects = new Map<string, ProjectConfig>();
   if(projectConfigs) {
@@ -23,20 +22,20 @@ export function getExtensionConfig(defaultLinter: string): ExtensionConfig{
   }
 
   return {
-    enable: config.get('enable') as boolean,
-		lintTool: linter,
+    enable: config.get<boolean>('enable', false),
+		lintTool: 'revive',
     lintFlags: linterFlags,
-    fallback: config.get('fallback', {}) as ProjectConfig,
+    fallback: config.get<ProjectConfig>('fallback', {} as ProjectConfig),
     projects: projects,
     workspace: workspaceRoot
   };
 }
 
 export function configHasChanged(e: vscode.ConfigurationChangeEvent): boolean {
-	return e.affectsConfiguration('go.lintFlags') || e.affectsConfiguration('go.lintTool') || e.affectsConfiguration('reviver');
+	return e.affectsConfiguration("go.lintOnSave") || e.affectsConfiguration('reviver');
 }
 
-export async function processConfig(rawConfig: ExtensionConfig): Promise<GoLintConfig> {
+export async function processConfig(rawConfig: ExtensionConfig): Promise<ReviverConfig> {
   const projectName = path.basename(rawConfig.workspace);
   let projectConfig = rawConfig.projects?.get(projectName) || rawConfig.fallback;
 
@@ -52,9 +51,10 @@ export async function processConfig(rawConfig: ExtensionConfig): Promise<GoLintC
   const filename = projectConfig.useStaticFilename ? projectConfig.filename : projectName + '.toml';
 
 	// whether the linter should enabled based on us valid processing 
-	let enabled: boolean = false;
+	let enabled: boolean = true;
 
   let processedFlags: string[] = [];
+
 	// process ${filename} first
 	for(let flag of rawConfig.lintFlags) {
 		if(flag.indexOf('${filename}') !== -1) {
@@ -84,7 +84,7 @@ export async function processConfig(rawConfig: ExtensionConfig): Promise<GoLintC
 		let configPaths: string[] = [];
 		// slice off the ${dirs:} prefix and the trailing }
 		const dirName = flag.substring(dirsStartIndex+7, lastIndex);
-		// split the comma separated list of directories
+		// split the comma separated list of directories: workspace,workspaceParent,userHome
 		const dirs = dirName.split(',');
 
 		const remainingPath = flag.substring(lastIndex + 1);
@@ -112,22 +112,24 @@ export async function processConfig(rawConfig: ExtensionConfig): Promise<GoLintC
 			}
 		}
 
+
 		if(configPaths.length === 0) {
 			// no valid directories found, just push the flag into the args without processing
 			console.log("No valid directories found for: ", dirName);
 			continue;
 		}	
 
-		
+		// using the config paths, try to find the first accessible file in the list
 		let foundPath = await findFirstAccessibleFile(configPaths);
 		console.log("the found path: ", foundPath);
 		if(foundPath) {
+			console.log("made it here 6");
 			processedFlags.push(foundPath);
 			enabled = true;
 		}else {
-			console.error("No config file found for: ", configPaths);
-			foundPath = configPaths[configPaths.length - 1];
-			processedFlags.push(foundPath);
+			enabled = false;
+			console.log("made it here 7");
+			break;
 		}
 	}
 
@@ -138,6 +140,6 @@ export async function processConfig(rawConfig: ExtensionConfig): Promise<GoLintC
       lintFlags: processedFlags,
       workspace: rawConfig.workspace,
       project: projectConfig
-    } as GoLintConfig);
+    } as ReviverConfig);
 	});
 }

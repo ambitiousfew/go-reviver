@@ -2,7 +2,7 @@
   "name": "go-reviver",
   "displayName": "Go Reviver",
   "description": "To make the Golang revive linter more configurable vscode settings",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -37,6 +37,16 @@
           "default": false,
           "description": "Enable/disable revive lint wrapper"
         },
+        "reviver.lintFlags": {
+          "type": "array",
+          "default": [],
+          "description": "Additional flags to pass to revive, ex: ['-config', '/path/to/revive.toml']" 
+        },
+        "reviver.lintOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable linting on save"
+        },
         "reviver.lintLevel": {
           "type": "string",
           "default": "package",
@@ -67,7 +77,7 @@
     "commands": [
       {
         "command": "go-reviver.lint.package",
-        "title": "Lint Package"
+        "title": "Reviver: Lint Package"
       }
     ]
   },

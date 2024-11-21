@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
 import { parsePackageReviveOutput } from '../utils/revive';
 import { updateDiagnostics } from '../utils/diagnostics';
-import { GoLintConfig } from '../types/config';
+import { ReviverConfig } from '../types/config';
 
-export function runLinter(conf: GoLintConfig, cwd: string, diagnostics: vscode.DiagnosticCollection): void {
-  vscode.window.showInformationMessage('Running linter: ' + conf.lintTool + ' ' + conf.lintFlags.join(' '));
 
+export function runLinter(conf: ReviverConfig, cwd: string, diagnostics: vscode.DiagnosticCollection): void {
 	const spawn = require('child_process').spawn;
 	const child = spawn(conf.lintTool, conf.lintFlags, { cwd: cwd });
 
@@ -24,9 +23,8 @@ export function runLinter(conf: GoLintConfig, cwd: string, diagnostics: vscode.D
 	});
 
 	child.on('close', (code: number) => {
-		console.log(`child process exited with code ${code} running ${conf.lintTool} ${conf.lintFlags.join(' ')}`);
 		if (code !== 0) {
-				vscode.window.showErrorMessage(`exited with code ${code}`);
+				vscode.window.showErrorMessage(`${conf.lintTool} exited with code ${code}`);
 		} else {
 				// vscode.window.showInformationMessage(`succeeded`);
 				// Parse revive output and update diagnostics
