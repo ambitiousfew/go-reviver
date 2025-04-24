@@ -2,7 +2,7 @@
   "name": "go-reviver",
   "displayName": "Go Reviver",
   "description": "To make the Golang revive linter more configurable vscode settings",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -50,8 +50,8 @@
         "reviver.lintLevel": {
           "type": "string",
           "default": "package",
-          "enum": ["package", "file"],
-          "description": "unsupported: linting is done at package level based on the file being saved or opened"
+          "enum": ["package", "all"],
+          "description": "Linting defaults to package level based on the file being saved or opened, all will run against the entire workspace"
         },
         "reviver.fallback": {
           "type": "object",

@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 			.then((conf: ReviverConfig) => {
 				// cache the processed config
 				cachedConfig = conf;
-				console.log("cachedConfig: ", cachedConfig);
+				// console.log("cachedConfig: ", cachedConfig);
 			})
 			.catch((e) => {
 				outputChannel.appendLine(formatLog("Error processing extension config: " + e, LogType.ERROR));
@@ -120,9 +120,10 @@ export function activate(context: vscode.ExtensionContext) {
 			outputChannel.appendLine(formatLog(`No cache config found prior to saving document: ${document.fileName}`, LogType.ERROR));
 			return;
 		}
-
+		
 		// get the parent directory of the document we are saving
 		const cwd = path.dirname(document.uri.fsPath);
+		
 		// dont run the linter if the config couldnt process the configs correctly
 		if(!cachedConfig.enabled) {
 			// the last loaded/cached config was not valid, so we can't run the linter

@@ -7,10 +7,9 @@ import { ExtensionConfig, ReviverConfig, ProjectConfig, Projects } from "../type
 
 
 export function getExtensionConfig(): ExtensionConfig{
-	// const goExtConfig = vscode.workspace.getConfiguration('go');
-	// const linterFlags = goExtConfig.get('lintFlags', [] as string[]);
   const config = vscode.workspace.getConfiguration('reviver');
 	const linterFlags = config.get<string[]>('lintFlags', []);
+	const linterLevel = config.get<string>('lintLevel', 'all');
   const workspaceRoot = currentWorkingDirectory();
   const projectConfigs = config.get<ProjectConfig|undefined>('projects');
 
@@ -25,6 +24,7 @@ export function getExtensionConfig(): ExtensionConfig{
     enable: config.get<boolean>('enable', false),
 		lintTool: 'revive',
     lintFlags: linterFlags,
+		lintLevel: linterLevel,
     fallback: config.get<ProjectConfig>('fallback', {} as ProjectConfig),
     projects: projects,
     workspace: workspaceRoot
@@ -121,14 +121,11 @@ export async function processConfig(rawConfig: ExtensionConfig): Promise<Reviver
 
 		// using the config paths, try to find the first accessible file in the list
 		let foundPath = await findFirstAccessibleFile(configPaths);
-		console.log("the found path: ", foundPath);
 		if(foundPath) {
-			console.log("made it here 6");
 			processedFlags.push(foundPath);
 			enabled = true;
 		}else {
 			enabled = false;
-			console.log("made it here 7");
 			break;
 		}
 	}
@@ -138,6 +135,7 @@ export async function processConfig(rawConfig: ExtensionConfig): Promise<Reviver
 			enabled: enabled,
       lintTool: rawConfig.lintTool,
       lintFlags: processedFlags,
+			lintLevel: rawConfig.lintLevel,
       workspace: rawConfig.workspace,
       project: projectConfig
     } as ReviverConfig);

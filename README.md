@@ -58,5 +58,12 @@ All the same rules as before still apply for directory searching but now the fil
 3. `/home/dev/my-project`
 
 
+## Lint Level
+There is a setting for `revive.lintLevel` defaults to `"package"` the other option is `"all"`. 
+
+`"package"` - The go package the file sits in is used as the current working directory so all files in that package should be linted each save. No matter what your vscode workspace is opened at, only the package relative to the saved file is linted against.
+
+`"all"` - Any saved file the linter will run against the entire workspace of all packages using the equivalent `revive` command with `./...` from the vscode workspace. So if you are opened in your project root, all go packages would be linted against.
+
 ### Per-project Linter Configuration
 Documentation - Work in progress

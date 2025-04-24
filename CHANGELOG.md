@@ -5,6 +5,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 This is a pre-release version. Features and behavior may change.
 
+## [0.0.4] - April 24, 2025
+
+### Added
+- revive.lintLevel for "package" and "all"
+- Updated README
+
+### Removed
+- Misc. left over debug logs
 
 ## [0.0.3] - November 21, 2024
 

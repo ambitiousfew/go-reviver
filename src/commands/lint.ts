@@ -5,8 +5,25 @@ import { ReviverConfig } from '../types/config';
 
 
 export function runLinter(conf: ReviverConfig, cwd: string, diagnostics: vscode.DiagnosticCollection): void {
+	let currentFlags = [...conf.lintFlags];
+	let currentDirectory = cwd;
+	switch (conf.lintLevel) {
+		case 'all':
+			// alter the cwd to the workspace directory
+			currentDirectory = conf.workspace;
+			// alter the flags to include all subdirectories for revive
+			currentFlags.push('./...');
+			break;
+		case 'package':
+			// do nothing, package is default behavior of revive using cwd.
+			break;
+		default:
+			vscode.window.showErrorMessage(`${conf.lintLevel} is not a valid lint level. Please use 'all' or 'package'.`);
+			return;
+	}
+
 	const spawn = require('child_process').spawn;
-	const child = spawn(conf.lintTool, conf.lintFlags, { cwd: cwd });
+	const child = spawn(conf.lintTool, currentFlags, { cwd: currentDirectory });
 
 	// store buffer output from the linter
 	// we must concat because the output may be split across multiple data events (chunking)
@@ -28,7 +45,7 @@ export function runLinter(conf: ReviverConfig, cwd: string, diagnostics: vscode.
 		} else {
 				// vscode.window.showInformationMessage(`succeeded`);
 				// Parse revive output and update diagnostics
-				const diagnosticsByFile = parsePackageReviveOutput(cwd, buffer.toString());
+				const diagnosticsByFile = parsePackageReviveOutput(currentDirectory, buffer.toString());
 				updateDiagnostics(diagnosticsByFile, diagnostics);
 		}
 	});
